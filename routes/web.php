@@ -1,0 +1,73 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+
+Route::get('/', function () {
+    return view('home');
+});
+
+Route::view('/login', 'login')->name('login');
+
+Route::post('/login', function (\Illuminate\Http\Request $request) {
+    $response = Http::post('http://auth.radbios.com.br/api/login', [
+        'email' => $request->email,
+        'password' => $request->password,
+    ]);
+
+    if ($response->successful()) {
+        $data = $response->json();
+        session(['user_token' => $data['access_token'], 'user_data' => $data['user']]);
+        // dd($data);
+        return redirect()->route('catalog');
+    }
+    return back()->withErrors(['email' => 'Credenciais inválidas'])->withInput();
+});
+
+Route::get('/logout', function () {
+    session()->forget(['user_token', 'user_data']);
+    session()->flush();
+    return redirect('/login');
+})->name('logout');
+
+
+Route::get('/catalog', function () {
+
+    $response = Http::get('https://radbios.com.br/api/service/catalog/products');
+
+    if ($response->successful()) {
+        $produtos = $response->json();
+    } else {
+        $produtos = []; // fallback vazio
+    }
+
+    // dd($produtos);
+
+    return view('catalog', compact('produtos'));
+})->name('catalog');
+
+Route::get('/cart', function () {
+    $token = session('user_token');
+
+    if (!$token) {
+        return redirect('/login');
+    }
+
+    $response = Http::withToken($token)->get('https://cart.radbios.com.br/api/cart');
+    
+
+    if ($response->successful()) {
+        $cartItems = $response->json();
+        // dd($cartItems);
+
+        return view('cart', [
+            'cartItems' => $cartItems,
+        ]);
+    } else {
+        return redirect()->back()->with('error', 'Erro ao carregar o carrinho.');
+    }
+})->name('cart');
+
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');

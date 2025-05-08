@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Carrinho - EcoMercy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0fdf4;
+            color: #333;
+        }
+
+        header {
+
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-container h1 {
+            color: #065f46;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .cart-container {
+            padding: 30px 20px;
+        }
+
+        .cart-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-size: 16px;
+            color: #065f46;
+            font-weight: bold;
+        }
+
+        .item-price {
+            font-size: 16px;
+            color: #444;
+            margin-top: 5px;
+        }
+
+        .item-remove {
+            background-color: transparent;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #065f46;
+        }
+
+        .purchase {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .purchase-item {
+
+            display: inline-block;
+            background-color: #059669;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .purchase-item:hover {
+            background-color: #047857;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .end-items {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-container">
+            <h1>EcoMercy</h1>
+        </div>
+
+        <div class="end-items">
+            <a href="{{ route('cart') }}" style="position: relative; color: #065f46; text-decoration: none;">
+                <img src="{{ asset('img/cart.svg') }}" style="width: 25px;" alt="">
+                <span id="cart-count"
+                    style="
+                position: absolute;
+                top: -8px;
+                right: -12px;
+                background: #059669;
+                color: white;
+                border-radius: 50%;
+                padding: 2px 6px;
+                font-size: 12px;
+            ">
+                    {{ session('cart_count', 0) }}
+                </span>
+            </a>
+            <a href="{{ route('logout') }}" style="color: #065f46; text-decoration: none; font-weight: bold;">Sair</a>
+        </div>
+    </header>
+
+    <div class="cart-container">
+        <h2>Seu Carrinho</h2>
+
+        @php
+            $total_final = 0;
+        @endphp
+
+        @foreach ($cartItems as $item)
+        @php
+        $total_final = $total_final + $item[0]['total'];
+    @endphp
+            @for ($i = 1; $i <= $item[0]['quantity']; $i++)
+                <div class="cart-item">
+                    <img src="{{ $item[0]['product']['image_url'] }}" alt="Produto {{ $i }}">
+                    <div class="item-info">
+                        <div class="item-name">{{ $item[0]['product']['name'] }}</div>
+                        <div class="item-price">{{ $item[0]['product']['description'] }}</div>
+                        <div class="item-price">R$ {{ number_format($item[0]['product']['price'], 2, ',', '.') }}</div>
+                    </div>
+                    <button class="item-remove">Remover</button>
+                </div>
+            @endfor
+        @endforeach
+
+
+
+        <div class="cart-item">
+            <div class="item-info">
+                <div class="item-name">Insira seu CEP para calcular o frete:</div>
+                <input type="number">
+                <a class="purchase-item">Calcular</a>
+
+                <div class="item-price">---</div>
+            </div>
+        </div>
+
+        <div class="purchase">
+            <div class="total">
+                Total: R$ {{ number_format($total_final, 2, ',', '.')}}
+            </div>
+            <a class="purchase-item">Continuar Compra</a>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; {{ date('Y') }} EcoMercy. Produtos ecológicos com propósito.
+    </footer>
+
+</body>
+
+</html>
