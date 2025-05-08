@@ -136,9 +136,14 @@
 <body>
 
     <header>
-        <div class="logo-container" href="{{ route('catalog') }}">
-            <h1>EcoMercy</h1>
-        </div>
+        <a href="{{ route('catalog') }}">
+            <div class="logo-container">
+                <h1>EcoMercy</h1>
+            </div>
+        </a>
+        <a href="{{ route('config') }}">
+            <img src="{{ asset('img/config.svg') }}" style="width: 25px;" alt="">
+        </a>
         <a href="{{ route('logout') }}" style="color: #065f46; text-decoration: none; font-weight: bold;">Sair</a>
     </header>
 
@@ -146,26 +151,26 @@
         <h2>Seu Carrinho</h2>
 
         @php
-    $total_final = 0;
-@endphp
+            $total_final = 0;
+        @endphp
 
-@foreach ($cartItems as $item)
-    @php
-        $total_final += $item['total'];
-    @endphp
+        @foreach ($cartItems as $item)
+            @php
+                $total_final += $item['total'];
+            @endphp
 
-    @for ($i = 1; $i <= $item['quantity']; $i++)
-        <div class="cart-item">
-            <img src="{{ $item['product']['image_url'] }}" alt="Produto {{ $item['product']['name'] }}">
-            <div class="item-info">
-                <div class="item-name">{{ $item['product']['name'] }}</div>
-                <div class="item-price">{{ $item['product']['description'] }}</div>
-                <div class="item-price">R$ {{ number_format($item['product']['price'], 2, ',', '.') }}</div>
-            </div>
-            <button class="item-remove">Remover</button>
-        </div>
-    @endfor
-@endforeach
+            @for ($i = 1; $i <= $item['quantity']; $i++)
+                <div class="cart-item">
+                    <img src="{{ $item['product']['image_url'] }}" alt="Produto {{ $item['product']['name'] }}">
+                    <div class="item-info">
+                        <div class="item-name">{{ $item['product']['name'] }}</div>
+                        <div class="item-price">{{ $item['product']['description'] }}</div>
+                        <div class="item-price">R$ {{ number_format($item['product']['price'], 2, ',', '.') }}</div>
+                    </div>
+                    <button class="item-remove">Remover</button>
+                </div>
+            @endfor
+        @endforeach
 
 
 
@@ -173,19 +178,39 @@
         <div class="cart-item">
             <div class="item-info">
                 <div class="item-name">Insira seu CEP para calcular o frete:</div>
-                <input type="number">
-                <a class="purchase-item">Calcular</a>
-
-                <div class="item-price">---</div>
+                <input type="number" id="cep-input" placeholder="Digite seu CEP">
+                <a class="purchase-item" id="calc-frete">Calcular</a>
+        
+                <div class="item-price" id="frete-valor">---</div>
             </div>
         </div>
-
+        
         <div class="purchase">
             <div class="total">
-                Total: R$ {{ number_format($total_final, 2, ',', '.')}}
+                Total: R$ <span id="total-final">{{ number_format($total_final, 2, ',', '.') }}</span>
             </div>
-            <a class="purchase-item">Continuar Compra</a>
+            <a class="purchase-item" href="{{ route('checkout') }}">Continuar Compra</a>
         </div>
+
+        <script>
+            const totalOriginal = parseFloat(@json($total_final));
+        
+            document.getElementById('calc-frete').addEventListener('click', () => {
+                const cep = document.getElementById('cep-input').value.trim();
+        
+                if (cep.length < 8) {
+                    alert('CEP inválido. Digite 8 números.');
+                    return;
+                }
+        
+                let frete = cep.startsWith('57') ? 10.00 : 25.00;
+        
+                document.getElementById('frete-valor').innerText = `R$ ${frete.toFixed(2).replace('.', ',')}`;
+        
+                const novoTotal = totalOriginal + frete;
+                document.getElementById('total-final').innerText = novoTotal.toFixed(2).replace('.', ',');
+            });
+        </script>
 
     </div>
 

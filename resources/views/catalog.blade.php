@@ -140,14 +140,20 @@
 <body>
 
     <header>
-        <div class="logo-container" href="{{ route('catalog') }}">
-            @if ($user)
-                <h1>Olá, {{ $user['name'] }}</h1>
-            @else
-                <h1>EcoMercy</h1>
-            @endif
+        <a href="{{ route('catalog') }}">
+            <div class="logo-container">
+                @if ($user)
+                    <h1>Olá, {{ $user['name'] }}</h1>
+                @else
+                    <h1>EcoMercy</h1>
+                @endif
+            </div>
+        </a>
         </div>
         <div class="end-items">
+            <a href="{{ route('config') }}">
+                <img src="{{ asset('img/config.svg') }}" style="width: 25px;" alt="">
+            </a>
             <a href="{{ route('cart') }}" style="position: relative; color: #065f46; text-decoration: none;">
                 <img src="{{ asset('img/cart.svg') }}" style="width: 25px;" alt="">
                 <span id="cart-count"
@@ -172,7 +178,8 @@
         <div class="carousel">
             @foreach ($produtos['data'] as $recomendados)
                 <div class="product-card">
-                    <img src="{{ $recomendados['image_url'] }}" style="width: 30px;" alt="{{ $recomendados['name'] }}">
+                    {{-- <img src="{{ $recomendados['image_url'] }}" style="width: 30px;" alt="{{ $recomendados['name'] }}"> --}}
+                    <img src="{{ asset('img/ecomercy.png') }}" alt="{{ $recomendados['name'] }}">
                     <div class="product-name">{{ $recomendados['name'] }}</div>
                     <div class="product-price">{{ $recomendados['description'] }}</div>
                     <div class="product-price">R$ {{ number_format($recomendados['price'], 2, ',', '.') }}</div>
@@ -186,7 +193,8 @@
         <div class="product-grid">
             @foreach ($produtos['data'] as $produto)
                 <div class="product-card">
-                    <img src="{{ $produto['image_url'] }}" style="width: 30px;" alt="{{ $produto['name'] }}">
+                    {{-- <img src="{{ $produto['image_url'] }}" style="width: 30px;" alt="{{ $produto['name'] }}"> --}}
+                    <img src="{{ asset('img/ecomercy.png') }}" alt="{{ $produto['name'] }}">
                     <div class="product-name">{{ $produto['name'] }}</div>
                     <div class="product-price">{{ $produto['description'] }}</div>
                     <div class="product-price">R$ {{ number_format($produto['price'], 2, ',', '.') }}</div>
@@ -224,12 +232,12 @@
                         alert('Produto adicionado ao carrinho!');
                         // Aqui você pode atualizar o contador do carrinho também, se quiser
                         const countResponse = await fetch(
-                        'https://cart.radbios.com.br/api/cart/count', {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': 'Bearer ' + userToken
-                            }
-                        });
+                            'https://cart.radbios.com.br/api/cart/count', {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer ' + userToken
+                                }
+                            });
 
                         const countData = await countResponse.json();
                         const newCount = countData.count ?? 0;
