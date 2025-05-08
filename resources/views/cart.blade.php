@@ -136,54 +136,37 @@
 <body>
 
     <header>
-        <div class="logo-container">
+        <div class="logo-container" href="{{ route('catalog') }}">
             <h1>EcoMercy</h1>
         </div>
-
-        <div class="end-items">
-            <a href="{{ route('cart') }}" style="position: relative; color: #065f46; text-decoration: none;">
-                <img src="{{ asset('img/cart.svg') }}" style="width: 25px;" alt="">
-                <span id="cart-count"
-                    style="
-                position: absolute;
-                top: -8px;
-                right: -12px;
-                background: #059669;
-                color: white;
-                border-radius: 50%;
-                padding: 2px 6px;
-                font-size: 12px;
-            ">
-                    {{ session('cart_count', 0) }}
-                </span>
-            </a>
-            <a href="{{ route('logout') }}" style="color: #065f46; text-decoration: none; font-weight: bold;">Sair</a>
-        </div>
+        <a href="{{ route('logout') }}" style="color: #065f46; text-decoration: none; font-weight: bold;">Sair</a>
     </header>
 
     <div class="cart-container">
         <h2>Seu Carrinho</h2>
 
         @php
-            $total_final = 0;
-        @endphp
+    $total_final = 0;
+@endphp
 
-        @foreach ($cartItems as $item)
-        @php
-        $total_final = $total_final + $item[0]['total'];
+@foreach ($cartItems as $item)
+    @php
+        $total_final += $item['total'];
     @endphp
-            @for ($i = 1; $i <= $item[0]['quantity']; $i++)
-                <div class="cart-item">
-                    <img src="{{ $item[0]['product']['image_url'] }}" alt="Produto {{ $i }}">
-                    <div class="item-info">
-                        <div class="item-name">{{ $item[0]['product']['name'] }}</div>
-                        <div class="item-price">{{ $item[0]['product']['description'] }}</div>
-                        <div class="item-price">R$ {{ number_format($item[0]['product']['price'], 2, ',', '.') }}</div>
-                    </div>
-                    <button class="item-remove">Remover</button>
-                </div>
-            @endfor
-        @endforeach
+
+    @for ($i = 1; $i <= $item['quantity']; $i++)
+        <div class="cart-item">
+            <img src="{{ $item['product']['image_url'] }}" alt="Produto {{ $item['product']['name'] }}">
+            <div class="item-info">
+                <div class="item-name">{{ $item['product']['name'] }}</div>
+                <div class="item-price">{{ $item['product']['description'] }}</div>
+                <div class="item-price">R$ {{ number_format($item['product']['price'], 2, ',', '.') }}</div>
+            </div>
+            <button class="item-remove">Remover</button>
+        </div>
+    @endfor
+@endforeach
+
 
 
 

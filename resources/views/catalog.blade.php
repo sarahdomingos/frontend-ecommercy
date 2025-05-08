@@ -115,6 +115,21 @@
             align-items: center;
             gap: 24px;
         }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #059669;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #047857;
+        }
     </style>
 </head>
 
@@ -125,10 +140,10 @@
 <body>
 
     <header>
-        <div class="logo-container">
+        <div class="logo-container" href="{{ route('catalog') }}">
             @if ($user)
-                 <h1>Olá, {{$user["name"]}}</h1>
-            @else 
+                <h1>Olá, {{ $user['name'] }}</h1>
+            @else
                 <h1>EcoMercy</h1>
             @endif
         </div>
@@ -144,8 +159,7 @@
                 color: white;
                 border-radius: 50%;
                 padding: 2px 6px;
-                font-size: 12px;
-            ">
+                font-size: 12px;">
                     {{ session('cart_count', 0) }}
                 </span>
             </a>
@@ -156,28 +170,87 @@
     <div class="catalog-container">
         <h2>Recomendações feitas para você</h2>
         <div class="carousel">
-            @foreach ($produtos["data"] as $recomendados)
+            @foreach ($produtos['data'] as $recomendados)
                 <div class="product-card">
                     <img src="{{ $recomendados['image_url'] }}" style="width: 30px;" alt="{{ $recomendados['name'] }}">
                     <div class="product-name">{{ $recomendados['name'] }}</div>
                     <div class="product-price">{{ $recomendados['description'] }}</div>
                     <div class="product-price">R$ {{ number_format($recomendados['price'], 2, ',', '.') }}</div>
+                    <button class="btn-submit" data-product-id="{{ $recomendados['id'] }}">Adicionar ao
+                        Carrinho</button>
                 </div>
             @endforeach
         </div>
-    
+
         <h2 style="margin-top: 40px;">Catálogo completo</h2>
         <div class="product-grid">
-            @foreach ($produtos["data"] as $produto)
+            @foreach ($produtos['data'] as $produto)
                 <div class="product-card">
                     <img src="{{ $produto['image_url'] }}" style="width: 30px;" alt="{{ $produto['name'] }}">
                     <div class="product-name">{{ $produto['name'] }}</div>
                     <div class="product-price">{{ $produto['description'] }}</div>
                     <div class="product-price">R$ {{ number_format($produto['price'], 2, ',', '.') }}</div>
+                    <button class="btn-submit" data-product-id="{{ $produto['id'] }}">Adicionar ao
+                        Carrinho</button>
                 </div>
             @endforeach
         </div>
     </div>
+
+    <script>
+        const userToken = @json(session('user_token'));
+    </script>
+    <script>
+        document.querySelectorAll('.btn-submit').forEach(button => {
+            button.addEventListener('click', async () => {
+                const productId = button.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch('https://cart.radbios.com.br/api/cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + userToken // vindo da sessão PHP
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            quantity: 1
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Produto adicionado ao carrinho!');
+                        // Aqui você pode atualizar o contador do carrinho também, se quiser
+                        const countResponse = await fetch(
+                        'https://cart.radbios.com.br/api/cart/count', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + userToken
+                            }
+                        });
+
+                        const countData = await countResponse.json();
+                        const newCount = countData.count ?? 0;
+
+                        // Atualiza o elemento na página (assumindo que o HTML tem isso)
+                        const cartCountElement = document.getElementById('cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.innerText = newCount;
+                        }
+                    } else {
+                        alert('Erro: ' + (data.message || 'não foi possível adicionar ao carrinho.'));
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('Erro de conexão com a API.');
+                }
+            });
+        });
+    </script>
+
+
     <footer>
         &copy; {{ date('Y') }} EcoMercy. Produtos ecológicos com propósito.
     </footer>

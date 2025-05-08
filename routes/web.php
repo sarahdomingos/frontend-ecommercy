@@ -54,11 +54,15 @@ Route::get('/cart', function () {
     }
 
     $response = Http::withToken($token)->get('https://cart.radbios.com.br/api/cart');
+    $countResponse = Http::withToken($token)->get('https://cart.radbios.com.br/api/cart/count');
     
 
-    if ($response->successful()) {
-        $cartItems = $response->json();
-        // dd($cartItems);
+    if ($response->successful() && $countResponse->successful()) {
+        $cartItems = $response->json()['data'];
+        $cartCount = $countResponse->json()['count'] ?? 0;
+        session(['cart_count' => $cartCount]);
+
+        // dd($cartCount);
 
         return view('cart', [
             'cartItems' => $cartItems,

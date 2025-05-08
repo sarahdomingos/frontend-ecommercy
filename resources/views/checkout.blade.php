@@ -107,7 +107,7 @@
 <body>
 
 <header>
-    <div class="logo-container">
+    <div class="logo-container" href="{{ route('catalog') }}">
         <h1>EcoMercy</h1>
     </div>
     <a href="{{ route('logout') }}" style="color: #065f46; text-decoration: none; font-weight: bold;">Sair</a>
