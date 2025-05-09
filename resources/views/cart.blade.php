@@ -167,7 +167,9 @@
                         <div class="item-price">{{ $item['product']['description'] }}</div>
                         <div class="item-price">R$ {{ number_format($item['product']['price'], 2, ',', '.') }}</div>
                     </div>
-                    <button class="item-remove">Remover</button>
+                    @if (in_array("remover_produto", $features))
+                        <button class="item-remove">Remover</button>
+                    @endif
                 </div>
             @endfor
         @endforeach
@@ -175,15 +177,17 @@
 
 
 
-        <div class="cart-item">
-            <div class="item-info">
-                <div class="item-name">Insira seu CEP para calcular o frete:</div>
-                <input type="number" id="cep-input" placeholder="Digite seu CEP">
-                <a class="purchase-item" id="calc-frete">Calcular</a>
-        
-                <div class="item-price" id="frete-valor">---</div>
+        @if(in_array("frete_estimado", $features))
+            <div class="cart-item">
+                <div class="item-info">
+                    <div class="item-name">Insira seu CEP para calcular o frete:</div>
+                    <input type="number" id="cep-input" placeholder="Digite seu CEP">
+                    <a class="purchase-item" id="calc-frete">Calcular</a>
+            
+                    <div class="item-price" id="frete-valor">---</div>
+                </div>
             </div>
-        </div>
+        @endif
         
         <div class="purchase">
             <div class="total">

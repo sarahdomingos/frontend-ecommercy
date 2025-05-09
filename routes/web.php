@@ -1,5 +1,9 @@
+
 <?php
 
+use App\Models\Config;
+use Illuminate\Http\Request;
+use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
@@ -78,4 +82,24 @@ Route::get('/checkout', function () {
 
 Route::get('/config', function () {
     return view('config');
+})->name('config');
+
+Route::post('/config', function (Request $request) {
+    $features = Config::pluck("name")->toArray();
+    foreach($features as $feat) {
+        $status = null;
+
+        if(in_array($feat, $request->features)) {
+            $status = true;
+        }
+        else {
+            $status = false;
+        }
+
+        Config::where("name", $feat)->update([
+            "actived" => $status
+        ]);
+    }
+
+    return redirect()->back();
 })->name('config');

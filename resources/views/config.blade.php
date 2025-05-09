@@ -199,22 +199,22 @@
     <div class="config-container">
         <h1>Configurações de Funcionalidades</h1>
     
-        <form method="POST" action="">
+        <form method="POST" action="{{route('config')}}">
             @csrf
-    
+            @method("POST")
             <!-- CATÁLOGO -->
             <h2>Catálogo</h2>
             <div class="feature-group">
                 <div class="feature-option">
-                    <input type="checkbox" id="mostrar_recomendacao" name="features[]" value="mostrar_recomendacao" checked>
+                    <input type="checkbox" id="mostrar_recomendacao" name="features[]" value="mostrar_recomendacao" @if(in_array("mostrar_recomendacao", $features)) checked @endif>
                     <label for="mostrar_recomendacao">Mostrar recomendações feitas para você</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="mostrar_adicao_carrinho" name="features[]" value="mostrar_adicao_carrinho" checked>
+                    <input type="checkbox" id="mostrar_adicao_carrinho" name="features[]" value="mostrar_adicao_carrinho" @if(in_array("mostrar_adicao_carrinho", $features)) checked @endif>
                     <label for="mostrar_adicao_carrinho">Mostrar popup de adição ao carrinho</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="mostrar_adicao_carrinho" name="features[]" value="mostrar_decricao" checked>
+                    <input type="checkbox" id="mostrar_decricao" name="features[]" value="mostrar_decricao" @if(in_array("mostrar_decricao", $features)) checked @endif>
                     <label for="mostrar_decricao">Mostrar descrição do produto</label>
                 </div>
             </div>
@@ -223,11 +223,11 @@
             <h2>Carrinho</h2>
             <div class="feature-group">
                 <div class="feature-option">
-                    <input type="checkbox" id="frete_estimado" name="features[]" value="frete_estimado" checked>
+                    <input type="checkbox" id="frete_estimado" name="features[]" value="frete_estimado" @if(in_array("frete_estimado", $features)) checked @endif>
                     <label for="frete_estimado">Calcular frete estimado</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="frete_estimado" name="features[]" value="remover_produto">
+                    <input type="checkbox" id="remover_produto" name="features[]" value="remover_produto" @if(in_array("remover_produto", $features)) checked @endif>
                     <label for="remover_produto">Permitir remoção de produto do carrinho</label>
                 </div>
             </div>
@@ -236,19 +236,19 @@
             <h2>Pagamento</h2>
             <div class="feature-group">
                 <div class="feature-option">
-                    <input type="checkbox" id="pagamento_pix" name="features[]" value="pagamento_pix" checked>
+                    <input type="checkbox" id="pagamento_pix" name="features[]" value="pagamento_pix" @if(in_array("pagamento_pix", $features)) checked @endif>
                     <label for="pagamento_pix">Permitir pagamento por pix</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="pagamento_cartao" name="features[]" value="pagamento_cartao">
+                    <input type="checkbox" id="pagamento_cartao" name="features[]" value="pagamento_cartao" @if(in_array("pagamento_cartao", $features)) checked @endif>
                     <label for="pagamento_cartao">Permitir pagamento por cartão de crédito</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="pagamento_boleto" name="features[]" value="pagamento_boleto">
+                    <input type="checkbox" id="pagamento_boleto" name="features[]" value="pagamento_boleto"  @if(in_array("pagamento_boleto", $features)) checked @endif>
                     <label for="pagamento_boleto">Permitir pagamento por boleto</label>
                 </div>
                 <div class="feature-option">
-                    <input type="checkbox" id="resumo_final_pedido" name="features[]" value="resumo_final_pedido" checked>
+                    <input type="checkbox" id="resumo_final_pedido" name="features[]" value="resumo_final_pedido" @if(in_array("resumo_final_pedido", $features)) checked @endif>
                     <label for="resumo_final_pedido">Exibir resumo final do pedido antes do pagamento</label>
                 </div>
             </div>

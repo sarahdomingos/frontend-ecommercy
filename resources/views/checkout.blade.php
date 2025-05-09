@@ -128,9 +128,9 @@
             <label for="paymentMethod">Escolha a forma de pagamento:</label>
             <select id="paymentMethod" name="paymentMethod" required>
                 <option value="">Selecione</option>
-                <option value="pix">PIX</option>
-                <option value="boleto" disabled>Boleto (Indisponível)</option>
-                <option value="cartao" disabled>Cartão de crédito (Indisponível)</option>
+                <option value="pix" @if(!in_array("pagamento_pix", $features)) disabled @endif>PIX @if(!in_array("pagamento_pix", $features))(Indisponível)@endif</option>
+                <option value="boleto" @if(!in_array("pagamento_boleto", $features)) disabled @endif>Boleto @if(!in_array("pagamento_boleto", $features))(Indisponível)@endif</option>
+                <option value="cartao" @if(!in_array("pagamento_cartao", $features)) disabled @endif>Cartão de crédito @if(!in_array("pagamento_cartao", $features))(Indisponível)@endif</option>
             </select>
 
             <button type="submit">Finalizar Pedido</button>

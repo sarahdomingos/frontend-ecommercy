@@ -174,20 +174,24 @@
     </header>
 
     <div class="catalog-container">
-        <h2>Recomendações feitas para você</h2>
-        <div class="carousel">
-            @foreach ($produtos['data'] as $recomendados)
-                <div class="product-card">
-                    {{-- <img src="{{ $recomendados['image_url'] }}" style="width: 30px;" alt="{{ $recomendados['name'] }}"> --}}
-                    <img src="{{ asset('img/ecomercy.png') }}" alt="{{ $recomendados['name'] }}">
-                    <div class="product-name">{{ $recomendados['name'] }}</div>
-                    <div class="product-price">{{ $recomendados['description'] }}</div>
-                    <div class="product-price">R$ {{ number_format($recomendados['price'], 2, ',', '.') }}</div>
-                    <button class="btn-submit" data-product-id="{{ $recomendados['id'] }}">Adicionar ao
-                        Carrinho</button>
-                </div>
-            @endforeach
-        </div>
+        @if(in_array("mostrar_recomendacao", $features))
+            <h2>Recomendações feitas para você</h2>
+            <div class="carousel">
+                @foreach ($produtos['data'] as $recomendados)
+                    <div class="product-card">
+                        {{-- <img src="{{ $recomendados['image_url'] }}" style="width: 30px;" alt="{{ $recomendados['name'] }}"> --}}
+                        <img src="{{ asset('img/ecomercy.png') }}" alt="{{ $recomendados['name'] }}">
+                        <div class="product-name">{{ $recomendados['name'] }}</div>
+                        @if (in_array("mostrar_decricao", $features))
+                            <div class="product-price">{{ $recomendados['description'] }}</div>
+                        @endif
+                        <div class="product-price">R$ {{ number_format($recomendados['price'], 2, ',', '.') }}</div>
+                        <button class="btn-submit" data-product-id="{{ $recomendados['id'] }}">Adicionar ao
+                            Carrinho</button>
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         <h2 style="margin-top: 40px;">Catálogo completo</h2>
         <div class="product-grid">
@@ -196,7 +200,9 @@
                     {{-- <img src="{{ $produto['image_url'] }}" style="width: 30px;" alt="{{ $produto['name'] }}"> --}}
                     <img src="{{ asset('img/ecomercy.png') }}" alt="{{ $produto['name'] }}">
                     <div class="product-name">{{ $produto['name'] }}</div>
-                    <div class="product-price">{{ $produto['description'] }}</div>
+                    @if (in_array("mostrar_decricao", $features))
+                        <div class="product-price">{{ $recomendados['description'] }}</div>
+                    @endif
                     <div class="product-price">R$ {{ number_format($produto['price'], 2, ',', '.') }}</div>
                     <button class="btn-submit" data-product-id="{{ $produto['id'] }}">Adicionar ao
                         Carrinho</button>
@@ -229,7 +235,9 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        alert('Produto adicionado ao carrinho!');
+                        @if(in_array("mostrar_adicao_carrinho", $features))
+                            alert('Produto adicionado ao carrinho!');
+                        @endif
                         // Aqui você pode atualizar o contador do carrinho também, se quiser
                         const countResponse = await fetch(
                             'https://cart.radbios.com.br/api/cart/count', {
@@ -248,7 +256,9 @@
                             cartCountElement.innerText = newCount;
                         }
                     } else {
-                        alert('Erro: ' + (data.message || 'não foi possível adicionar ao carrinho.'));
+                        @if(in_array("mostrar_adicao_carrinho", $features))
+                            alert('Erro: ' + (data.message || 'não foi possível adicionar ao carrinho.'));
+                        @endif
                     }
                 } catch (error) {
                     console.error(error);
