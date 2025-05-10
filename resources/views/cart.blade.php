@@ -161,7 +161,7 @@
 
             @for ($i = 1; $i <= $item['quantity']; $i++)
                 <div class="cart-item">
-                    <img src="{{ $item['product']['image_url'] }}" alt="Produto {{ $item['product']['name'] }}">
+                    <img src="{{ asset('img/ecomercy.png') }}" alt="Produto {{ $item['product']['name'] }}">
                     <div class="item-info">
                         <div class="item-name">{{ $item['product']['name'] }}</div>
                         <div class="item-price">{{ $item['product']['description'] }}</div>
@@ -178,15 +178,97 @@
 
 
         @if(in_array("frete_estimado", $features))
-            <div class="cart-item">
-                <div class="item-info">
-                    <div class="item-name">Insira seu CEP para calcular o frete:</div>
-                    <input type="number" id="cep-input" placeholder="Digite seu CEP">
-                    <a class="purchase-item" id="calc-frete">Calcular</a>
+            <!-- Parte do carrinho.blade.php -->
+<div style="margin-top: 20px;">
+    <label for="cep">Digite seu CEP:</label>
+    <input type="text" id="cep" name="cep" placeholder="00000-000">
+    <button id="btn-calcular-frete">Calcular Frete</button>
+</div>
+
+<div id="frete-resultados" style="margin-top: 15px;"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btnFrete = document.getElementById('btn-calcular-frete');
+        if (btnFrete) {
+            btnFrete.addEventListener('click', calcularFrete);
+        }
+    });
+
+    function calcularFrete() {
+        const cep = document.getElementById('cep').value.trim();
+        const resultados = document.getElementById('frete-resultados');
+        resultados.innerHTML = 'Calculando...';
+        const userToken = @json(session('user_token'));
+
+        if (!cep) {
+            resultados.innerHTML = 'Por favor, digite um CEP válido.';
+            return;
+        }
+            console.log('entrou 1');
+        fetch('https://radbios.com.br/api/service/shipping/shipping', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + userToken,
+            },
+            body: JSON.stringify({
+                postal_code: cep
+            })
             
-                    <div class="item-price" id="frete-valor">---</div>
-                </div>
-            </div>
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data && Array.isArray(data.options)) {
+                let html = '<h4>Opções de Entrega:</h4><ul>';
+                data.options.forEach(opcao => {
+                    html += `<li>
+                        <strong>${opcao.nome}</strong> - R$ ${opcao.valor} 
+                        (${opcao.prazo} dias úteis)
+                        <button onclick="selecionarFrete('${opcao.id}', '${opcao.nome}', '${opcao.valor}')">
+                            Selecionar
+                        </button>
+                    </li>`;
+                });
+                html += '</ul>';
+                resultados.innerHTML = html;
+            } else {
+                resultados.innerHTML = 'Nenhuma opção de frete encontrada para este CEP.';
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            resultados.innerHTML = 'Erro ao calcular o frete. Tente novamente mais tarde.';
+        });
+    }
+
+    // function selecionarFrete(id, nome, valor) {
+    //     alert(`Você selecionou: ${nome} - R$ ${valor}`);
+
+    //     fetch('/salvar-frete', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //         },
+    //         body: JSON.stringify({
+    //             id: id,
+    //             nome: nome,
+    //             valor: valor
+    //         })
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log('Frete salvo com sucesso', data);
+    //     })
+    //     .catch(error => {
+    //         console.error('Erro ao salvar frete:', error);
+    //     });
+    // }
+</script>
+
+
         @endif
         
         <div class="purchase">
@@ -195,26 +277,6 @@
             </div>
             <a class="purchase-item" href="{{ route('checkout') }}">Continuar Compra</a>
         </div>
-
-        <script>
-            const totalOriginal = parseFloat(@json($total_final));
-        
-            document.getElementById('calc-frete').addEventListener('click', () => {
-                const cep = document.getElementById('cep-input').value.trim();
-        
-                if (cep.length < 8) {
-                    alert('CEP inválido. Digite 8 números.');
-                    return;
-                }
-        
-                let frete = cep.startsWith('57') ? 10.00 : 25.00;
-        
-                document.getElementById('frete-valor').innerText = `R$ ${frete.toFixed(2).replace('.', ',')}`;
-        
-                const novoTotal = totalOriginal + frete;
-                document.getElementById('total-final').innerText = novoTotal.toFixed(2).replace('.', ',');
-            });
-        </script>
 
     </div>
 
