@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::share('features', Config::where("actived", true)->pluck("name")->toArray());
+        if(Schema::hasTable('configs')) {
+            View::share('features', Config::where("actived", true)->pluck("name")->toArray());
+        }
     }
 }

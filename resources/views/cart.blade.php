@@ -149,7 +149,7 @@
 
     <div class="cart-container">
         <h2>Seu Carrinho</h2>
-
+    
         @php
             $total_final = 0;
         @endphp
@@ -195,7 +195,7 @@
             </div>
             <a class="purchase-item" href="{{ route('checkout') }}">Continuar Compra</a>
         </div>
-
+        <input type="hidden" name="user_token" value="{{$user_token}}" id="user_token">
         <script>
             const totalOriginal = parseFloat(@json($total_final));
         
@@ -206,13 +206,30 @@
                     alert('CEP inválido. Digite 8 números.');
                     return;
                 }
+
+                fetch("https://radbios.com.br/api/service/shipping/shipping?postal_code=" + cep, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': "Bearer " + document.getElementById("user_token").value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let frete = parseFloat(data[0].price);
+                    console.log(frete)
+                    const novoTotal = totalOriginal + frete;
+                    document.getElementById('frete-valor').innerText =
+                        `${data[0].name} - R$ ${frete.toFixed(2).replace('.', ',')}`;
+
+                    document.getElementById('total-final').innerText =
+                        novoTotal.toFixed(2).replace('.', ',');
+                })
+                .catch(error => {
+                    console.error('Erro na requisição:', error);
+                });
         
-                let frete = cep.startsWith('57') ? 10.00 : 25.00;
-        
-                document.getElementById('frete-valor').innerText = `R$ ${frete.toFixed(2).replace('.', ',')}`;
-        
-                const novoTotal = totalOriginal + frete;
-                document.getElementById('total-final').innerText = novoTotal.toFixed(2).replace('.', ',');
             });
         </script>
 

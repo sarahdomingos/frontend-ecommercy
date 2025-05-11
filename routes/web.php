@@ -70,6 +70,7 @@ Route::get('/cart', function () {
 
         return view('cart', [
             'cartItems' => $cartItems,
+            'user_token' => $token
         ]);
     } else {
         return redirect()->back()->with('error', 'Erro ao carregar o carrinho.');
